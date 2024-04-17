@@ -63,5 +63,14 @@ router.delete('/:id', async(req, res, next)=> {
     handleError({error,res})
   }
 })
+// DELETE ALL
+router.delete('/', async(req, res, next)=> {
+  try {
+    const result = await Post.deleteMany()
+    handleSuccess(res, result)
+  } catch (error) {
+    handleError({error,res})
+  }
+})
 
 module.exports = router

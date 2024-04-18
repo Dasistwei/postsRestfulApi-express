@@ -28,11 +28,10 @@ router.post('/', async(req, res, next)=> {
 //PUT
 router.put('/:id', async(req, res, next)=> {
   try {
+    console.log(req.params)
     const { content, image, name, likes } = req.body
     const result = await Post.findByIdAndUpdate(
-      {
-        _id: req.params.id
-      },
+      req.params.id,
       {
         name,
         content,

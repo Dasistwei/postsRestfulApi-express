@@ -12,31 +12,38 @@ router.get('/', async(req, res, next)=> {
 
 // POST
 router.post('/', async(req, res, next)=> {
-  console.log(req.body)
-  const { content, image, name, likes } = req.body
-  const result = await Post.create(
-    {
-      name,
-      content,
-      image,
-      likes
-    }
-  )  
-  handleSuccess(res, result)
+  try {
+    const { content, image, name, likes } = req.body
+    const result = await Post.create(
+      {
+        name: name.trim(),
+        content: content.trim(),
+        image: image.trim(),
+        likes
+      }
+    )  
+    handleSuccess(res, result)    
+  } catch (error) {
+    handleError({res})
+  }
+
 })
 
 //PUT
 router.put('/:id', async(req, res, next)=> {
   try {
-    console.log(req.params)
     const { content, image, name, likes } = req.body
     const result = await Post.findByIdAndUpdate(
       req.params.id,
       {
-        name,
-        content,
-        image,
+        name: name.trim(),
+        content: content.trim(),
+        image: image.trim(),
         likes
+      },
+      { 
+        runValidators: true,
+        new: true
       }
     )
     if(result !== null){
@@ -51,13 +58,14 @@ router.put('/:id', async(req, res, next)=> {
 // DELETE
 router.delete('/:id', async(req, res, next)=> {
   try {
-    console.log('req.params.id', req.params.id)
-    const result = await Post.findByIdAndDelete(req.params.id)
-    if(result !== null){
-      handleSuccess(res, result)
-    }else{
-      handleError({res})  
-    }  
+    if(req.originalUrl.startsWith('/posts/')){
+      const result = await Post.findByIdAndDelete(req.params.id)
+      if(result !== null){
+        handleSuccess(res, result)
+      }else{
+        handleError({res}) 
+      }  
+    }
   } catch (error) {
     handleError({error,res})
   }
@@ -65,8 +73,12 @@ router.delete('/:id', async(req, res, next)=> {
 // DELETE ALL
 router.delete('/', async(req, res, next)=> {
   try {
-    const result = await Post.deleteMany()
-    handleSuccess(res, result)
+    if(req.originalUrl === '/posts'){
+      const result = await Post.deleteMany()
+      handleSuccess(res, result)
+    }else{
+      handleError({res})  
+    }
   } catch (error) {
     handleError({error,res})
   }

@@ -24,6 +24,9 @@ const postSchema = new mongoose.Schema(
         type: Number,
         default:0
     }    
+  },
+  {
+    versionKey: false
   }  
 )
 // 建立model
